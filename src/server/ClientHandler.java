@@ -1,5 +1,12 @@
 package server;
 
+/**
+ * Java2. Lesson 7. Homework
+ *
+ * @author Egor Patrashkin
+ * @version dated Nov 20, 2018
+ */
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -43,11 +50,16 @@ public class ClientHandler {
                         //рабочий цикл
                         while (true) {
                             String str = in.readUTF();
-                            if (str.equals("/end")) {
+                            String[] words = str.split(" ");
+                            if (words[0].equals("/end")) {
                                 out.writeUTF("/serverclosed");
                                 break;
+                            } else if(words[0].equals("/w")){
+                                String temp = str.substring(words[0].length()+words[1].length()+1);
+                                server.sendMsgTo(words[1],temp);
+                            } else {
+                                server.broadcastMsg(str);
                             }
-                            server.broadcastMsg(str);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -82,5 +94,9 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getNick() {
+        return nick;
     }
 }
