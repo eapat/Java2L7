@@ -1,5 +1,12 @@
 package server;
 
+/**
+ * Java2. Lesson 7. Homework
+ *
+ * @author Egor Patrashkin
+ * @version dated Nov 20, 2018
+ */
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -48,6 +55,24 @@ public class Server {
             o.sendMsg(msg);
         }
     }
+
+    /**
+     * Метож отправляющий персональное сообщение
+     * @param address кому
+     * @param msg сообщение
+     * @return true если есть такой адресат
+     */
+    public boolean sendMsgTo(String address,String msg) {
+        for (ClientHandler o : clients) {
+            if (o.getNick().equals(address)){
+                o.sendMsg(msg);
+                return true;
+            }
+
+        }
+        return false;
+    }
+
 
     public void subscribe(ClientHandler clientHandler) {
         clients.add(clientHandler);
