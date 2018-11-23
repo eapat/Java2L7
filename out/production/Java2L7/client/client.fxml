@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ListView?>
 <VBox alignment="center" xmlns:fx="http://javafx.com/fxml" fx:controller="client.Controller">
 
     <HBox fx:id="upperPanel">
@@ -14,10 +15,17 @@
         <Button text="Авторизоваться" onAction="#tryToAuth"/>
     </HBox>
 
-    <TextArea fx:id="chatArea" editable="false" VBox.vgrow="ALWAYS"/>
-    <HBox fx:id="bottomPanel" managed="false" visible="false">
-        <TextField fx:id="msgField" onAction="#sendMsg" promptText="Введите сообщение..." HBox.hgrow="ALWAYS"/>
-        <Button text="Отправить" onAction="#sendMsg"/>
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox HBox.hgrow="ALWAYS">
+            <TextArea fx:id="chatArea" editable="false" VBox.vgrow="ALWAYS"/>
+            <HBox fx:id="bottomPanel" managed="false" visible="false">
+
+                <TextField fx:id="msgField" onAction="#sendMsg" promptText="Введите сообщение..." HBox.hgrow="ALWAYS"/>
+                <Button text="Отправить" onAction="#sendMsg"/>
+
+            </HBox>
+        </VBox>
+        <ListView fx:id="clientList" managed="false" visible="false"></ListView>
     </HBox>
 
 </VBox>

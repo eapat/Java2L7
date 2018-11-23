@@ -17,9 +17,11 @@ public class AuthService {
     }
 
     public static String getNickname(String login, String pass) {
+
         String query = String.format("select nickname from main\n" +
                 "where login = '%s'\n" +
                 "and password = '%s'", login, pass);
+
         try {
             ResultSet rs = stmt.executeQuery(query);
             if (rs.next()) {
@@ -31,7 +33,7 @@ public class AuthService {
         return null;
     }
 
-    public static void disconnect(){
+    public static void disconnect() {
         try {
             connection.close();
         } catch (SQLException e) {
