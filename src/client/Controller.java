@@ -1,7 +1,9 @@
 package client;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -30,6 +32,9 @@ public class Controller {
     @FXML
     PasswordField passwordField;
 
+    @FXML
+    ListView<String> clientList;
+
     private boolean isAuthorized;
 
     Socket socket;
@@ -45,12 +50,16 @@ public class Controller {
             upperPanel.setVisible(true);
             upperPanel.setManaged(true);
             bottomPanel.setVisible(false);
-            bottomPanel.setManaged(true);
+            bottomPanel.setManaged(false);
+            clientList.setVisible(false);
+            clientList.setManaged(false);
         } else {
             upperPanel.setVisible(false);
             upperPanel.setManaged(false);
             bottomPanel.setVisible(true);
             bottomPanel.setManaged(true);
+            clientList.setVisible(true);
+            clientList.setManaged(true);
         }
     }
 
@@ -59,36 +68,42 @@ public class Controller {
             socket = new Socket(IP_ADRESS, PORT);
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
-                            String str = in.readUTF();
-                            if (str.startsWith("/authok")) {
-                                setAuthorized(true);
-                                break;
-                            } else {
-                                chatArea.appendText(str + "\n");
-                            }
-                        }
-
-                        while (true) {
-                            String str = in.readUTF();
-                            if (str.equals("/serverclosed")) {
-                                break;
-                            }
+            setAuthorized(false);
+            new Thread(() -> {
+                try {
+                    while (true) {
+                        String str = in.readUTF();
+                        if (str.startsWith("/authok")) {
+                            setAuthorized(true);
+                            break;
+                        } else {
                             chatArea.appendText(str + "\n");
                         }
+                    }
+                    while (true) {
+                        String str = in.readUTF();
+                        if (str.startsWith("/")) {
+                            if (str.equals("/serverclosed")) break;
+                            if (str.startsWith("/clientlist")) {
+                                String[] tokens = str.split(" ");
+                                Platform.runLater(() -> {
+                                    clientList.getItems().clear();
+                                    for (int i = 1; i < tokens.length; i++) {
+                                        clientList.getItems().add(tokens[i]);
+                                    }
+                                });
+                            }
+                        }
+
+                        chatArea.appendText(str + "\n");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } finally {
-                        try {
-                            socket.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                     }
                 }
             }).start();
@@ -120,5 +135,4 @@ public class Controller {
             e.printStackTrace();
         }
     }
-
 }
